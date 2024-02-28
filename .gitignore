@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Folder
+bin
+datasets
+obj
+results
