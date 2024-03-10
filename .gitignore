@@ -36,3 +36,10 @@ bin
 datasets
 obj
 results
+
+# vscode
+.vscode
+
+# spdlog
+spdlog
+logs
