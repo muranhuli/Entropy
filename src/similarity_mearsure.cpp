@@ -63,8 +63,8 @@ float similarity_vertex(const WeightedHypergraph &hg, int a, int b)
     float similarity = 0;
     WeightedVertex v0 = hg.GetVertex(a);
     WeightedVertex v1 = hg.GetVertex(b);
-    unordered_set<int> adj_a = hg.GetAdjacencyList(a);
-    unordered_set<int> adj_b = hg.GetAdjacencyList(b);
+    std::unordered_set<int> adj_a = hg.GetAdjacencyList(a);
+    std::unordered_set<int> adj_b = hg.GetAdjacencyList(b);
 
     similarity = float(intersection(adj_a, adj_b).size()) / float(intersection(adj_b, adj_a).size());
     float punish = 0;

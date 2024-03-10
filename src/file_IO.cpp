@@ -49,5 +49,4 @@ void read_hypergraph(const string &filename, vector<int> &vertex, vector<vector<
     }
 }
 
-
 #endif // FILE_READER_H

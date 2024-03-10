@@ -4,8 +4,8 @@
 #include <unordered_set>
 #include <cmath>
 #include "data_structure.hpp"
-
-using namespace std;
+#include <spdlog/spdlog.h>
+#include "tools.hpp"
 
 /**
  * @brief hypergraph
@@ -14,7 +14,7 @@ WeightedHypergraph::WeightedHypergraph()
 {
 }
 
-void WeightedHypergraph::InitialVertex(vector<int> vertices)
+void WeightedHypergraph::InitialVertex(std::vector<int> vertices)
 {
     for (auto &i : vertices)
     {
@@ -22,7 +22,7 @@ void WeightedHypergraph::InitialVertex(vector<int> vertices)
     }
 }
 
-void WeightedHypergraph::InitialHyperedge(vector<vector<int>> hyperedges)
+void WeightedHypergraph::InitialHyperedge(std::vector<std::vector<int>> hyperedges)
 {
     for (int i = 0; i < int(hyperedges.size()); i++)
     {
@@ -30,16 +30,16 @@ void WeightedHypergraph::InitialHyperedge(vector<vector<int>> hyperedges)
         {
             this->adjacency_list[j].insert(i);
         }
-        unordered_set<int> e(hyperedges[i].begin(), hyperedges[i].end());
+        std::unordered_set<int> e(hyperedges[i].begin(), hyperedges[i].end());
         this->hyperedges.emplace(i, WeightedHyperedge(i, e, 1));
     }
 }
 
 // Merge similar sets of vertices.
-void WeightedHypergraph::MergeVertex(vector<int> v)
+void WeightedHypergraph::MergeVertex(std::vector<int> v)
 {
     // Find hyperedges that need to merge vertices
-    unordered_set<int> hyperedges_to_merge;
+    std::unordered_set<int> hyperedges_to_merge;
     for (auto &node : v)
     {
         for (auto &i : this->adjacency_list[node])
@@ -79,7 +79,7 @@ void WeightedHypergraph::MergeVertex(vector<int> v)
 }
 
 // Merge similar hyperedges
-void WeightedHypergraph::MergeHyperedge(vector<int> e)
+void WeightedHypergraph::MergeHyperedge(std::vector<int> e)
 {
     int weight = 0;
     for (auto &i : e)
@@ -111,31 +111,23 @@ const WeightedVertex WeightedHypergraph::GetVertex(int id) const
 
 void WeightedHypergraph::Output()
 {
-    cout << "Vertices:" << endl;
+    spdlog::info("Vertices:");
     for (auto &i : this->vertices)
     {
-        cout << i.first << " " << i.second.weight << endl;
+        spdlog::info("{} {}", i.first, i.second.weight);
     }
-    cout << "adjacency_list:" << endl;
+    spdlog::info("adjacency_list:");
     for (auto &i : this->adjacency_list)
     {
-        cout << i.first << " adj: ";
-        for (auto &j : i.second)
-        {
-            cout << j << " ";
-        }
-        cout << endl;
+        spdlog::info("{} adj: ", i.first);
+        spdlog::info("{}", toString(i.second));
     }
 
-    cout << "Hyperedges:" << endl;
+    spdlog::info("Hyperedges:");
     for (auto &i : this->hyperedges)
     {
-        cout << "ID: " << i.first << " Weight: " << i.second.weight << " Edge: ";
-        for (auto &j : i.second.vertices)
-        {
-            cout << j << " ";
-        }
-        cout << endl;
+        spdlog::info("ID: {} Weight: {} Edge: ", i.first, i.second.weight);
+        spdlog::info("{}", toString(i.second.vertices));
     }
 }
 
@@ -160,14 +152,14 @@ const int WeightedHypergraph::GetHyperedgeCardi(int id) const
     return cardi;
 }
 
-const unordered_set<int> WeightedHypergraph::GetAdjacencyList(int id) const
+const std::unordered_set<int> WeightedHypergraph::GetAdjacencyList(int id) const
 {
     return this->adjacency_list.at(id);
 }
 
-const vector<int> WeightedHypergraph::GetVertexList() const
+const std::vector<int> WeightedHypergraph::GetVertexList() const
 {
-    vector<int> vertex_list;
+    std::vector<int> vertex_list;
     for (auto &i : this->vertices)
     {
         vertex_list.push_back(i.second.id);
@@ -175,9 +167,9 @@ const vector<int> WeightedHypergraph::GetVertexList() const
     return vertex_list;
 }
 
-const vector<int> WeightedHypergraph::GetHyperedgeList() const
+const std::vector<int> WeightedHypergraph::GetHyperedgeList() const
 {
-    vector<int> hyperedge_list;
+    std::vector<int> hyperedge_list;
     for (auto &i : this->hyperedges)
     {
         hyperedge_list.push_back(i.second.id);
@@ -188,16 +180,12 @@ const vector<int> WeightedHypergraph::GetHyperedgeList() const
 const int WeightedHypergraph::GetHypergraphSize() const
 {
     int size = 0;
-    for (auto &edge: this->hyperedges)
+    for (auto &edge : this->hyperedges)
     {
         size += int(edge.second.vertices.size());
     }
     return size;
 }
-
-
-
-
 
 const float WeightedHypergraph::ComputeHypergraphEntropy() const
 {
@@ -219,7 +207,7 @@ const float WeightedHypergraph::ComputeHypergraphEntropy() const
         //     // sum_edge_vertex += this->GetVertexDegree(node);
         // }
         float p = float(sum_edge_vertex) / float(sum_vertex);
-        HyperedgeEntropy += -p * log(p)*info.second.weight;
+        HyperedgeEntropy += -p * log(p) * info.second.weight;
     }
 
     // 顶点熵
@@ -238,8 +226,8 @@ const float WeightedHypergraph::ComputeHypergraphEntropy() const
         //     sum_vertex_edge += this->hyperedges.at(edge).weight;
         // }
         float p = float(sum_vertex_edge) / float(sum_edge);
-        VertexEntropy += -p * log(p)*info.second.weight;
+        VertexEntropy += -p * log(p) * info.second.weight;
     }
-    cout<< "HyperedgeEntropy: " << HyperedgeEntropy << " VertexEntropy: " << VertexEntropy << endl;
+    spdlog::info("HyperedgeEntropy: {} VertexEntropy: {}", HyperedgeEntropy, VertexEntropy);
     return HyperedgeEntropy + VertexEntropy;
 }

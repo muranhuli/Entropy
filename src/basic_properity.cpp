@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "basic_properity.hpp"
-using namespace std;
 
 static std::vector<int> intersection(const std::unordered_set<int> &set1, const std::unordered_set<int> &set2)
 {
@@ -15,32 +14,32 @@ static std::vector<int> intersection(const std::unordered_set<int> &set1, const 
     return result;
 }
 
-vector<double> get_core_distribution(const WeightedHypergraph &hg,unordered_map<int, int> &core)
+std::vector<double> get_core_distribution(const WeightedHypergraph &hg, std::unordered_map<int, int> &core)
 {
     int max_core = INT_MIN;
     int sum = 0;
     for (auto info : core)
     {
-        max_core = max(max_core, info.second);
+        max_core = std::max(max_core, info.second);
         sum += hg.GetVertex(info.first).weight;
     }
-    vector<double> core_dist(max_core + 1, 0);
+    std::vector<double> core_dist(max_core + 1, 0);
 
     for (auto info : core)
     {
         core_dist[info.second] += hg.GetVertex(info.first).weight;
     }
-    for (size_t i= 0;i<core_dist.size();++i)
+    for (size_t i = 0; i < core_dist.size(); ++i)
     {
         core_dist[i] /= double(sum);
     }
     return core_dist;
 }
 
-vector<double> get_degree_distribution(const WeightedHypergraph &hg)
+std::vector<double> get_degree_distribution(const WeightedHypergraph &hg)
 {
-    vector<int> vec = hg.GetVertexList();
-    map<int, int> degree_count;
+    std::vector<int> vec = hg.GetVertexList();
+    std::map<int, int> degree_count;
     int max_degree = INT_MIN;
     int sum = 0;
     for (auto &i : vec)
@@ -48,10 +47,10 @@ vector<double> get_degree_distribution(const WeightedHypergraph &hg)
         int d = hg.GetVertexDegree(i);
         degree_count[d] += hg.GetVertex(i).weight;
         // 计算最大度，统计所有顶点数目
-        max_degree = max(max_degree, d);
+        max_degree = std::max(max_degree, d);
         sum += hg.GetVertex(i).weight;
     }
-    vector<double> dist(max_degree + 1, 0.0);
+    std::vector<double> dist(max_degree + 1, 0.0);
     for (auto &i : degree_count)
     {
         dist[i.first] = double(i.second) / double(sum);
@@ -59,10 +58,10 @@ vector<double> get_degree_distribution(const WeightedHypergraph &hg)
     return dist;
 }
 
-vector<double> get_cardi_distribution(const WeightedHypergraph &hg)
+std::vector<double> get_cardi_distribution(const WeightedHypergraph &hg)
 {
-    vector<int> vec = hg.GetHyperedgeList();
-    map<int, int> cardi_count;
+    std::vector<int> vec = hg.GetHyperedgeList();
+    std::map<int, int> cardi_count;
     int max_cardi = INT_MIN;
     int sum = 0;
     for (auto &i : vec)
@@ -70,10 +69,10 @@ vector<double> get_cardi_distribution(const WeightedHypergraph &hg)
         int c = hg.GetHyperedgeCardi(i);
         cardi_count[c] += hg.GetHyperedge(i).weight;
         // 计算最大度，统计所有顶点数目
-        max_cardi = max(max_cardi, c);
+        max_cardi = std::max(max_cardi, c);
         sum += hg.GetHyperedge(i).weight;
     }
-    vector<double> dist(max_cardi + 1, 0.0);
+    std::vector<double> dist(max_cardi + 1, 0.0);
     for (auto &i : cardi_count)
     {
         dist[i.first] = double(i.second) / double(sum);
@@ -81,10 +80,10 @@ vector<double> get_cardi_distribution(const WeightedHypergraph &hg)
     return dist;
 }
 
-vector<double> get_intersection_distribution(const WeightedHypergraph &hg)
+std::vector<double> get_intersection_distribution(const WeightedHypergraph &hg)
 {
-    vector<int> vec = hg.GetHyperedgeList();
-    map<int, int> intersection_count;
+    std::vector<int> vec = hg.GetHyperedgeList();
+    std::map<int, int> intersection_count;
     int max_intersection = INT_MIN;
     int sum = 0;
     for (size_t i = 0; i < vec.size(); ++i)
@@ -93,18 +92,18 @@ vector<double> get_intersection_distribution(const WeightedHypergraph &hg)
         {
             WeightedHyperedge e1 = hg.GetHyperedge(vec[i]);
             WeightedHyperedge e2 = hg.GetHyperedge(vec[j]);
-            vector<int> intsect = intersection(e1.vertices, e2.vertices);
+            std::vector<int> intsect = intersection(e1.vertices, e2.vertices);
             int cnt = 0;
             for (auto &k : intsect)
             {
                 cnt += hg.GetVertex(k).weight;
             }
             intersection_count[cnt] += e1.weight * e2.weight;
-            max_intersection = max(max_intersection, cnt);
+            max_intersection = std::max(max_intersection, cnt);
             sum += e1.weight * e2.weight;
         }
     }
-    vector<double> dist(max_intersection + 1, 0.0);
+    std::vector<double> dist(max_intersection + 1, 0.0);
     for (auto &i : intersection_count)
     {
         dist[i.first] = double(i.second) / double(sum);
@@ -112,31 +111,31 @@ vector<double> get_intersection_distribution(const WeightedHypergraph &hg)
     return dist;
 }
 
-vector<double> get_pairdeg_distribution(const WeightedHypergraph &hg)
+std::vector<double> get_pairdeg_distribution(const WeightedHypergraph &hg)
 {
-    vector<int> vec = hg.GetVertexList();
-    map<int, int> pairdeg_count;
+    std::vector<int> vec = hg.GetVertexList();
+    std::map<int, int> pairdeg_count;
     int max_pairdeg = INT_MIN;
     int sum = 0;
     for (size_t i = 0; i < vec.size(); ++i)
     {
         for (size_t j = i + 1; j < vec.size(); ++j)
         {
-            unordered_set<int> v1 = hg.GetAdjacencyList(vec[i]);
-            unordered_set<int> v2 = hg.GetAdjacencyList(vec[j]);
+            std::unordered_set<int> v1 = hg.GetAdjacencyList(vec[i]);
+            std::unordered_set<int> v2 = hg.GetAdjacencyList(vec[j]);
             int cnt = 0;
             // v1和v2的交集
-            vector<int> intsect = intersection(v1, v2);
+            std::vector<int> intsect = intersection(v1, v2);
             for (auto &k : intsect)
             {
                 cnt += hg.GetHyperedge(k).weight;
             }
             pairdeg_count[cnt] += hg.GetVertex(vec[i]).weight * hg.GetVertex(vec[j]).weight;
-            max_pairdeg = max(max_pairdeg, cnt);
+            max_pairdeg = std::max(max_pairdeg, cnt);
             sum += hg.GetVertex(vec[i]).weight * hg.GetVertex(vec[j]).weight;
         }
     }
-    vector<double> dist(max_pairdeg + 1, 0.0);
+    std::vector<double> dist(max_pairdeg + 1, 0.0);
     for (auto &i : pairdeg_count)
     {
         dist[i.first] = double(i.second) / double(sum);
@@ -173,27 +172,27 @@ double js_divergence(const std::vector<double> &dist1, const std::vector<double>
 
 double kl_divergence(const WeightedHypergraph &hg1, const WeightedHypergraph &hg2)
 {
-    vector<double> dist1 = get_degree_distribution(hg1);
-    vector<double> dist2 = get_degree_distribution(hg2);
+    std::vector<double> dist1 = get_degree_distribution(hg1);
+    std::vector<double> dist2 = get_degree_distribution(hg2);
     return kl_divergence(dist1, dist2);
 }
 
 double js_divergence(const WeightedHypergraph &hg1, const WeightedHypergraph &hg2)
 {
-    vector<double> dist1 = get_degree_distribution(hg1);
-    vector<double> dist2 = get_degree_distribution(hg2);
+    std::vector<double> dist1 = get_degree_distribution(hg1);
+    std::vector<double> dist2 = get_degree_distribution(hg2);
     return js_divergence(dist1, dist2);
 }
 
-int hamming_distance(const WeightedHypergraph &hg1, const WeightedHypergraph &hg2, unordered_map<int, unordered_set<int>> &idV, unordered_map<int, unordered_set<int>> &idE)
+int hamming_distance(const WeightedHypergraph &hg1, const WeightedHypergraph &hg2, std::unordered_map<int, std::unordered_set<int>> &idV, std::unordered_map<int, std::unordered_set<int>> &idE)
 {
     int hamming_distance = 0;
-    vector<int> hyperedge_list = hg2.GetHyperedgeList();
+    std::vector<int> hyperedge_list = hg2.GetHyperedgeList();
     for (auto e : hyperedge_list)
     {
         // 统计融合后的超边含有多少顶点
-        unordered_set<int> merge_hyperedge = hg2.GetHyperedge(e).vertices;
-        vector<int> vertex_fusion;
+        std::unordered_set<int> merge_hyperedge = hg2.GetHyperedge(e).vertices;
+        std::vector<int> vertex_fusion;
         for (auto v : merge_hyperedge)
         {
             // 统计融合后的顶点包含了哪些顶点，并将其展开
@@ -212,7 +211,7 @@ int hamming_distance(const WeightedHypergraph &hg1, const WeightedHypergraph &hg
         }
 
         // 统计超边e详单与多少超边
-        vector<int> origin_hyperedge;
+        std::vector<int> origin_hyperedge;
         origin_hyperedge.push_back(e);
         if (idE.find(e) != idE.end())
         {
@@ -223,7 +222,7 @@ int hamming_distance(const WeightedHypergraph &hg1, const WeightedHypergraph &hg
         }
         for (auto i : origin_hyperedge)
         {
-            unordered_set<int> origin = hg1.GetHyperedge(i).vertices;
+            std::unordered_set<int> origin = hg1.GetHyperedge(i).vertices;
             // 计算hamming distance
             int count = 0;
 

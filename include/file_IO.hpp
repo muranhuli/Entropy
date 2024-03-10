@@ -3,27 +3,19 @@
 #include <string>
 #include <vector>
 #include <fstream>
-using namespace std;
+#include "tools.hpp"
+#include <spdlog/spdlog.h>
 
 /**
  * @brief Read hypergraphs, hyperedge sets, and vertex sets from files, conforming to the structure of a weighted hypergraph.
-*/
-void read_hypergraph(const string &filename, vector<int> &vertex, vector<vector<int>> &hyperedge);
+ */
+void read_hypergraph(const std::string &filename, std::vector<int> &vertex, std::vector<std::vector<int>> &hyperedge);
 
-template <class T> void print_vector_to_file(const string &filename, const vector<T> &vec)
+template <class T>
+void print_vector_to_file(const std::string &filename, const std::vector<T> &vec)
 {
-    ofstream fout(filename, ios::out);
-    if (!fout.is_open())
-    {
-        cerr << "Error opening file " << filename << endl;
-        return;
-    }
-    for (size_t i = 0; i < vec.size(); i++)
-    {
-        fout << vec[i] << endl;
-    }
-    fout.close();
+    spdlog::info("print vector to file {}", filename);
+    spdlog::info("{}", toString(vec));
 }
-
 
 #endif // FILE_READER_HPP

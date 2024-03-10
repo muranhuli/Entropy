@@ -13,8 +13,8 @@ int randomSelect(std::unordered_set<int> &S, int seed);
 
 void mergeVertexWithMaxSimarity(WeightedHypergraph &hg, int cnt, int seed);
 
-unordered_map<int, unordered_set<int>> mergeVertex(WeightedHypergraph &hg, float similarity, int cnt, int seed);
+std::unordered_map<int, std::unordered_set<int>> mergeVertex(WeightedHypergraph &hg, float similarity, int cnt, int seed);
 
-unordered_map<int, unordered_set<int>> mergeHyperedge(WeightedHypergraph &hg, float similarity, int cnt, int seed);
+std::unordered_map<int, std::unordered_set<int>> mergeHyperedge(WeightedHypergraph &hg, float similarity, int cnt, int seed);
 
 #endif

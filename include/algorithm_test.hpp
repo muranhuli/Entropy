@@ -6,6 +6,6 @@ double bfs(const WeightedHypergraph &hg1, int v_id);
 
 double dfs(const WeightedHypergraph &hg1, int v_id);
 
-double kcoredecomposition(const WeightedHypergraph &hg, unordered_map<int, int> &core);
+double kcoredecomposition(const WeightedHypergraph &hg, std::unordered_map<int, int> &core);
 
 #endif // ALGORITHM_TEST_HPP

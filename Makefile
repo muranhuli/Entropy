@@ -15,10 +15,6 @@ bin/hypergraph_merge: $(cpp_obj)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $^ -o bin/hypergraph_merge
 
-run: bin/hypergraph_merge
-	@mkdir -p results
-	@./$< datasets/NDCC
-
 debug:
 	@echo $(cpp_obj)
 

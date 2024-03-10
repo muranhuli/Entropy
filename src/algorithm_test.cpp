@@ -5,22 +5,20 @@
 #include <set>
 #include <map>
 
-using namespace std;
-
 double bfs(const WeightedHypergraph &hg, int v_id)
 {
     auto start = std::chrono::high_resolution_clock::now(); // start timer
 
     // function code here
-    queue<int> v_queue;
+    std::queue<int> v_queue;
     v_queue.push(v_id);
-    unordered_set<int> visited;
+    std::unordered_set<int> visited;
     visited.emplace(v_id);
     while (!v_queue.empty())
     {
         int v = v_queue.front();
         v_queue.pop();
-        unordered_set<int> adj = hg.GetAdjacencyList(v);
+        std::unordered_set<int> adj = hg.GetAdjacencyList(v);
         for (auto e : adj)
         {
             WeightedHyperedge he = hg.GetHyperedge(e);
@@ -43,15 +41,15 @@ double dfs(const WeightedHypergraph &hg, int v_id)
     auto start = std::chrono::high_resolution_clock::now(); // start timer
 
     // function code here
-    stack<int> v_stack;
+    std::stack<int> v_stack;
     v_stack.push(v_id);
-    unordered_set<int> visited;
+    std::unordered_set<int> visited;
     visited.emplace(v_id);
     while (!v_stack.empty())
     {
         int v = v_stack.top();
         v_stack.pop();
-        unordered_set<int> adj = hg.GetAdjacencyList(v);
+        std::unordered_set<int> adj = hg.GetAdjacencyList(v);
         for (auto e : adj)
         {
             WeightedHyperedge he = hg.GetHyperedge(e);
@@ -69,8 +67,7 @@ double dfs(const WeightedHypergraph &hg, int v_id)
     return duration.count();                                                           // return duration in nanoseconds
 }
 
-
-typedef pair<int, int> PII;
+typedef std::pair<int, int> PII;
 struct myCmp
 {
     bool operator()(const PII &a, const PII &b) const
@@ -87,22 +84,22 @@ struct myCmp
     }
 };
 
-double kcoredecomposition(const WeightedHypergraph &hg, unordered_map<int, int> &core)
+double kcoredecomposition(const WeightedHypergraph &hg, std::unordered_map<int, int> &core)
 {
     auto start = std::chrono::high_resolution_clock::now(); // start timer
 
     // function code here
-    vector<int> v_list = hg.GetVertexList();
-    unordered_map<int,int> v_degree;
-    unordered_map<int,bool> v_visited;
-    unordered_map<int,bool> e_visited;
-    set<PII, myCmp> v_deg_set;
+    std::vector<int> v_list = hg.GetVertexList();
+    std::unordered_map<int, int> v_degree;
+    std::unordered_map<int, bool> v_visited;
+    std::unordered_map<int, bool> e_visited;
+    std::set<PII, myCmp> v_deg_set;
     for (auto v : v_list)
     {
         int degree = hg.GetVertexDegree(v);
-        v_degree.emplace(v,degree);
-        v_visited.emplace(v,false);
-        v_deg_set.emplace(v,v_degree[v]);
+        v_degree.emplace(v, degree);
+        v_visited.emplace(v, false);
+        v_deg_set.emplace(v, v_degree[v]);
     }
 
     int k = 0;
@@ -111,10 +108,10 @@ double kcoredecomposition(const WeightedHypergraph &hg, unordered_map<int, int> 
         PII p = *v_deg_set.begin();
         v_deg_set.erase(v_deg_set.begin());
         v_visited[p.first] = true;
-        k = max(k,p.second);
+        k = std::max(k, p.second);
         core[p.first] = k;
         v_visited[p.first] = true;
-        unordered_set<int> adj = hg.GetAdjacencyList(p.first);
+        std::unordered_set<int> adj = hg.GetAdjacencyList(p.first);
         for (auto e : adj)
         {
             if (e_visited[e])
@@ -123,9 +120,9 @@ double kcoredecomposition(const WeightedHypergraph &hg, unordered_map<int, int> 
             WeightedHyperedge he = hg.GetHyperedge(e);
             for (auto v1 : he.vertices)
             {
-                v_deg_set.erase(make_pair(v1,v_degree[v1]));
+                v_deg_set.erase(std::make_pair(v1, v_degree[v1]));
                 v_degree[v1] -= he.weight;
-                v_deg_set.emplace(v1,v_degree[v1]);
+                v_deg_set.emplace(v1, v_degree[v1]);
             }
         }
     }

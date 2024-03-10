@@ -2,22 +2,20 @@
 #include <vector>
 #include "merge.hpp"
 
-using namespace std;
-
 // 每次合并一个顶点和其邻居节点中最相似的顶点
 void mergeVertexWithMaxSimarity(WeightedHypergraph &hg, int cnt, int seed)
 {
     std::default_random_engine generator(seed);
     while (cnt--)
     {
-        vector<int> vec = hg.GetVertexList();
+        std::vector<int> vec = hg.GetVertexList();
         std::uniform_int_distribution<int> d1(0, int(vec.size()) - 1);
         int index = d1(generator);
         int v = vec[index];
 
         double max_sim = -1.0;
         int max_w = -1;
-        unordered_set<int> adj = hg.GetAdjacencyList(v);
+        std::unordered_set<int> adj = hg.GetAdjacencyList(v);
         for (auto &e : adj)
         {
             WeightedHyperedge he = hg.GetHyperedge(e);
@@ -38,24 +36,24 @@ void mergeVertexWithMaxSimarity(WeightedHypergraph &hg, int cnt, int seed)
             cnt++;
             continue;
         }
-        vector<int> vv{v, max_w};
+        std::vector<int> vv{v, max_w};
         hg.MergeVertex(vv);
     }
 }
 
-unordered_map<int, unordered_set<int>> mergeVertex(WeightedHypergraph &hg, float similarity, int cnt, int seed)
+std::unordered_map<int, std::unordered_set<int>> mergeVertex(WeightedHypergraph &hg, float similarity, int cnt, int seed)
 {
-    unordered_map<int, unordered_set<int>> ID_map;
+    std::unordered_map<int, std::unordered_set<int>> ID_map;
 
     std::default_random_engine generator(seed);
     while (cnt--)
     {
-        vector<int> vec = hg.GetVertexList();
+        std::vector<int> vec = hg.GetVertexList();
         std::uniform_int_distribution<int> d1(0, int(vec.size()) - 1);
         int index = d1(generator);
         int v = vec[index];
 
-        unordered_set<int> adj = hg.GetAdjacencyList(v);
+        std::unordered_set<int> adj = hg.GetAdjacencyList(v);
         std::uniform_int_distribution<int> d2(0, int(adj.size()) - 1);
         index = d2(generator);
         auto it = adj.begin();
@@ -79,7 +77,7 @@ unordered_map<int, unordered_set<int>> mergeVertex(WeightedHypergraph &hg, float
         auto sim = similarity_vertex(hg, v, v1);
         if (sim > similarity)
         {
-            vector<int> vv{v, v1};
+            std::vector<int> vv{v, v1};
             hg.MergeVertex(vv);
             // 记录合并的顶点
             // 判断v1是否再ID_map中
@@ -98,18 +96,18 @@ unordered_map<int, unordered_set<int>> mergeVertex(WeightedHypergraph &hg, float
     return ID_map;
 }
 
-unordered_map<int, unordered_set<int>> mergeHyperedge(WeightedHypergraph &hg, float similarity, int cnt, int seed)
+std::unordered_map<int, std::unordered_set<int>> mergeHyperedge(WeightedHypergraph &hg, float similarity, int cnt, int seed)
 {
-    unordered_map<int, unordered_set<int>> ID_map;
+    std::unordered_map<int, std::unordered_set<int>> ID_map;
     std::default_random_engine generator(seed);
     while (cnt--)
     {
-        vector<int> vec = hg.GetHyperedgeList();
+        std::vector<int> vec = hg.GetHyperedgeList();
         std::uniform_int_distribution<int> d1(0, int(vec.size()) - 1);
         int index = d1(generator);
         int e = vec[index];
 
-        unordered_set<int> vertices = hg.GetHyperedge(e).vertices;
+        std::unordered_set<int> vertices = hg.GetHyperedge(e).vertices;
         std::uniform_int_distribution<int> d2(0, int(vertices.size()) - 1);
         index = d2(generator);
         auto it = vertices.begin();
@@ -117,7 +115,7 @@ unordered_map<int, unordered_set<int>> mergeHyperedge(WeightedHypergraph &hg, fl
         int v = *it;
 
         // 随机获得该顶点的邻接超边集合中的一条超边
-        unordered_set<int> adj = hg.GetAdjacencyList(v);
+        std::unordered_set<int> adj = hg.GetAdjacencyList(v);
         std::uniform_int_distribution<int> d3(0, int(adj.size()) - 1);
         index = d3(generator);
         it = adj.begin();
@@ -132,7 +130,7 @@ unordered_map<int, unordered_set<int>> mergeHyperedge(WeightedHypergraph &hg, fl
         auto sim = similarity_hyperedge(hg, e, e1);
         if (sim > similarity)
         {
-            vector<int> ee{e, e1};
+            std::vector<int> ee{e, e1};
             // auto he = hg.GetHyperedge(e).vertices;
             // cout<<"he ";
             // for (auto &i : he)
@@ -173,10 +171,10 @@ bool compareByV2(const int &a, const int &b, const std::vector<int> &v2)
     return v2[a] > v2[b]; // Compare values in v2
 }
 
-vector<int> genCandidateVertex(WeightedHypergraph &hypergraph)
+std::vector<int> genCandidateVertex(WeightedHypergraph &hypergraph)
 {
-    vector<int> vertexList = hypergraph.GetVertexList();
-    vector<int> degreeList;
+    std::vector<int> vertexList = hypergraph.GetVertexList();
+    std::vector<int> degreeList;
     for (auto &i : vertexList)
     {
         degreeList.push_back(hypergraph.GetVertexDegree(i));
@@ -187,10 +185,10 @@ vector<int> genCandidateVertex(WeightedHypergraph &hypergraph)
     return vertexList;
 }
 
-vector<int> genCandidateHyperedge(WeightedHypergraph &hypergraph)
+std::vector<int> genCandidateHyperedge(WeightedHypergraph &hypergraph)
 {
-    vector<int> hyperedgeList = hypergraph.GetHyperedgeList();
-    vector<int> cardiList;
+    std::vector<int> hyperedgeList = hypergraph.GetHyperedgeList();
+    std::vector<int> cardiList;
     for (auto &i : hyperedgeList)
     {
         cardiList.push_back(hypergraph.GetHyperedgeCardi(i));
