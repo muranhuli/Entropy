@@ -35,15 +35,15 @@ int main(int argc, char *argv[])
     hg2.InitialVertex(vertex);
     hg2.InitialHyperedge(hyperedge);
 
-    spdlog::info("the entropy of hypergraph is {}", hg2.ComputeHypergraphEntropy());
-    spdlog::info("vertex size: {} hyperedge size: {}", hg2.GetVertexList().size(), hg2.GetHyperedgeList().size());
-    spdlog::info("the size of hypergraph is {}", hg2.GetHypergraphSize());
+    spdlog::info("The entropy of the original hypergraph is {}", hg2.ComputeHypergraphEntropy());
+    spdlog::info("The size of vertices: {}, the size of hyperedges: {}", hg2.GetVertexList().size(), hg2.GetHyperedgeList().size());
+    spdlog::info("The size of original hypergraph is {}", hg2.GetHypergraphSize());
 
     // mergeVertexWithMaxSimarity(hg2, 1000, 1);
+    std::unordered_map<int, std::unordered_set<int>> idV = mergeVertex(hg2, 0.80, 100, 1);
     std::unordered_map<int, std::unordered_set<int>> idE = mergeHyperedge(hg2, 0.80, 2000, 1);
 
-    spdlog::info("*************************");
-    spdlog::info("the entropy of hypergraph is {}", hg2.ComputeHypergraphEntropy());
-    spdlog::info("vertex size: {} hyperedge size: {}", hg2.GetVertexList().size(), hg2.GetHyperedgeList().size());
-    spdlog::info("the size of hypergraph is {}", hg2.GetHypergraphSize());
+    spdlog::info("The entropy of the compressed hypergraph is {}", hg2.ComputeHypergraphEntropy());
+    spdlog::info("The size of vertices: {}, the size of hyperedges: {}", hg2.GetVertexList().size(), hg2.GetHyperedgeList().size());
+    spdlog::info("The size of compressed hypergraph is {}", hg2.GetHypergraphSize());
 }
