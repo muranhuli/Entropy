@@ -2,7 +2,6 @@
 #include <vector>
 #include "merge.hpp"
 #include "spdlog/spdlog.h"
-
 // 每次合并一个顶点和其邻居节点中最相似的顶点
 void mergeVertexWithMaxSimarity(WeightedHypergraph &hg, int cnt, int seed)
 {

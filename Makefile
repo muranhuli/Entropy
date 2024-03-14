@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -std=c++17 -Wall -O3
 
-include_path = include spdlog/include
+include_path = include
 I_include = $(include_path:%=-I%)
 
 cpp_src = $(shell find src -name "*.cpp")
