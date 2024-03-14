@@ -40,6 +40,5 @@ results
 # vscode
 .vscode
 
-# spdlog
-spdlog
+# logs
 logs
