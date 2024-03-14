@@ -12,6 +12,8 @@ std::vector<double> get_intersection_distribution(const WeightedHypergraph &hg);
 
 std::vector<double> get_pairdeg_distribution(const WeightedHypergraph &hg);
 
+void outputProperty(const WeightedHypergraph &hg);
+
 std::vector<double> get_core_distribution(const WeightedHypergraph &hg, std::unordered_map<int, int> &core);
 
 double kl_divergence(const WeightedHypergraph &hg1, const WeightedHypergraph &hg2);

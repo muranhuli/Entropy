@@ -3,47 +3,62 @@
 #include "merge.hpp"
 #include "spdlog/spdlog.h"
 // 每次合并一个顶点和其邻居节点中最相似的顶点
-void mergeVertexWithMaxSimarity(WeightedHypergraph &hg, int cnt, int seed)
+std::vector<int> vertexSampleWithHighSimilarity(WeightedHypergraph &hg, int seed)
 {
-    std::default_random_engine generator(seed);
-    while (cnt--)
-    {
-        std::vector<int> vec = hg.GetVertexList();
-        std::uniform_int_distribution<int> d1(0, int(vec.size()) - 1);
-        int index = d1(generator);
-        int v = vec[index];
-
         double max_sim = -1.0;
-        int max_w = -1;
-        std::unordered_set<int> adj = hg.GetAdjacencyList(v);
-        for (auto &e : adj)
+        std::vector<int> vv;
+        std::vector<int> vec = hg.GetVertexList();
+        for (auto &v : vec)
         {
-            WeightedHyperedge he = hg.GetHyperedge(e);
-            for (auto &v1 : he.vertices)
+            std::unordered_set<int> adj = hg.GetAdjacencyList(v);
+            for (auto &e : adj)
             {
-                if (v1 == v)
-                    continue;
-                double sim = similarity_vertex(hg, v, v1);
-                if (sim > max_sim)
+                WeightedHyperedge he = hg.GetHyperedge(e);
+                for (auto &v1 : he.vertices)
                 {
-                    max_sim = sim;
-                    max_w = v1;
+                    if (v1 == v)
+                        continue;
+                    double sim = similarity_vertex(hg, v, v1);
+                    if (sim > max_sim)
+                    {
+                        max_sim = sim;
+                        std::vector<int>{v, v1}.swap(vv);
+                    }
                 }
             }
         }
-        if (max_sim < 0.9)
-        {
-            cnt++;
-            continue;
-        }
-        std::vector<int> vv{v, max_w};
-        hg.MergeVertex(vv);
-    }
+        return vv;
 }
 
-std::unordered_map<int, std::unordered_set<int>> singleVertexMerge(WeightedHypergraph &hg, float similarity, int seed)
+std::vector<int> hyperedgeSampleWithHighSimilarity(WeightedHypergraph &hg, int cnt, int seed)
 {
-    std::unordered_map<int, std::unordered_set<int>> ID_map;
+    double max_sim = -1.0;
+    std::vector<int> ee;
+    std::vector<int> vec = hg.GetHyperedgeList();
+    for (auto &e : vec)
+    {
+        WeightedHyperedge he = hg.GetHyperedge(e);
+        for (auto &v : he.vertices)
+        {
+            std::unordered_set<int> adj = hg.GetAdjacencyList(v);
+            for (auto &e1 : adj)
+            {
+                if (e1 == e)
+                    continue;
+                double sim = similarity_hyperedge(hg, e, e1);
+                if (sim > max_sim)
+                {
+                    max_sim = sim;
+                    std::vector<int>{e, e1}.swap(ee);
+                }
+            }
+        }
+    }
+    return std::vector<int>();
+}
+
+std::vector<int> vertexSample(WeightedHypergraph &hg, float similarity, int seed)
+{
     std::default_random_engine generator(seed);
     int count = 0;
     while (true)
@@ -51,7 +66,7 @@ std::unordered_map<int, std::unordered_set<int>> singleVertexMerge(WeightedHyper
         if (count >= 10000)
         {
             spdlog::error("Vertex: The number of iterations exceeds 10000, sample failed");
-            return ID_map;
+            return std::vector<int>();
         }
 
         std::vector<int> vec = hg.GetVertexList();
@@ -83,20 +98,7 @@ std::unordered_map<int, std::unordered_set<int>> singleVertexMerge(WeightedHyper
         if (sim > similarity)
         {
             std::vector<int> vv{v, v1};
-            hg.MergeVertex(vv);
-            // 记录合并的顶点
-            // 判断v1是否再ID_map中
-            if (ID_map.find(v1) != ID_map.end())
-            {
-                ID_map[v].insert(ID_map[v1].begin(), ID_map[v1].end());
-                ID_map[v].insert(v1);
-                ID_map.erase(v1);
-            }
-            else
-            {
-                ID_map[v].insert(v1);
-            }
-            return ID_map;
+            return vv;
         }
         else
         {
@@ -104,12 +106,10 @@ std::unordered_map<int, std::unordered_set<int>> singleVertexMerge(WeightedHyper
             continue;
         }
     }
-    return ID_map;
 }
 
-std::unordered_map<int, std::unordered_set<int>> singleHyperedgeMerge(WeightedHypergraph &hg, float similarity, int seed)
+std::vector<int> hyperedgeSample(WeightedHypergraph &hg, float similarity, int seed)
 {
-    std::unordered_map<int, std::unordered_set<int>> ID_map;
     std::default_random_engine generator(seed);
     int count = 0;
     while (true)
@@ -117,7 +117,7 @@ std::unordered_map<int, std::unordered_set<int>> singleHyperedgeMerge(WeightedHy
         if (count >= 10000)
         {
             spdlog::error("Hyperedge: The number of iterations exceeds 10000, sample failed");
-            return ID_map;
+            return std::vector<int>();
         }
 
         std::vector<int> vec = hg.GetHyperedgeList();
@@ -149,19 +149,7 @@ std::unordered_map<int, std::unordered_set<int>> singleHyperedgeMerge(WeightedHy
         if (sim > similarity)
         {
             std::vector<int> ee{e, e1};
-
-            hg.MergeHyperedge(ee);
-            if (ID_map.find(e1) != ID_map.end())
-            {
-                ID_map[e].insert(ID_map[e1].begin(), ID_map[e1].end());
-                ID_map[e].insert(e1);
-                ID_map.erase(e1);
-            }
-            else
-            {
-                ID_map[e].insert(e1);
-            }
-            return ID_map;
+            return ee;
         }
         else
         {
@@ -169,7 +157,6 @@ std::unordered_map<int, std::unordered_set<int>> singleHyperedgeMerge(WeightedHy
             continue;
         }
     }
-    return ID_map;
 }
 
 bool compareByV2(const int &a, const int &b, const std::vector<int> &v2)

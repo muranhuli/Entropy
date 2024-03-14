@@ -11,10 +11,12 @@ std::vector<int> genCandidateHyperedge(WeightedHypergraph &hypergraph);
 
 int randomSelect(std::unordered_set<int> &S, int seed);
 
-void mergeVertexWithMaxSimarity(WeightedHypergraph &hg, int cnt, int seed);
+std::vector<int> vertexSampleWithHighSimilarity(WeightedHypergraph &hg, int cnt, int seed=1);
 
-std::unordered_map<int, std::unordered_set<int>> singleVertexMerge(WeightedHypergraph &hg, float similarity, int seed = 1);
+std::vector<int> hyperedgeSampleWithHighSimilarity(WeightedHypergraph &hg, int cnt, int seed=1);
 
-std::unordered_map<int, std::unordered_set<int>> singleHyperedgeMerge(WeightedHypergraph &hg, float similarity, int seed = 1);
+std::vector<int> vertexSample(WeightedHypergraph &hg, float similarity, int seed = 1);
+
+std::vector<int> hyperedgeSample(WeightedHypergraph &hg, float similarity, int seed = 1);
 
 #endif

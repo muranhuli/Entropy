@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "basic_properity.hpp"
+#include "tools.hpp"
+#include <spdlog/spdlog.h>
 
 static std::vector<int> intersection(const std::unordered_set<int> &set1, const std::unordered_set<int> &set2)
 {
@@ -141,6 +143,25 @@ std::vector<double> get_pairdeg_distribution(const WeightedHypergraph &hg)
         dist[i.first] = double(i.second) / double(sum);
     }
     return dist;
+}
+
+void outputProperty(const WeightedHypergraph &hg)
+{
+    std::vector<double> v1 = get_degree_distribution(hg);
+    spdlog::info("degree distribution: {}", toString(v1));
+    std::cout<<"Finish degree distribution"<<std::endl;
+
+    std::vector<double> v2 = get_cardi_distribution(hg);
+    spdlog::info("cardi distribution: {}", toString(v2));
+    std::cout<<"Finish cardi distribution"<<std::endl;
+
+    std::vector<double> v3 = get_intersection_distribution(hg);
+    spdlog::info("intersection distribution: {}", toString(v3));
+    std::cout<<"Finish intersection distribution"<<std::endl;
+
+    std::vector<double> v4 = get_pairdeg_distribution(hg);
+    spdlog::info("pairdeg distribution: {}", toString(v4));
+    std::cout<<"Finish pairdeg distribution"<<std::endl;
 }
 
 double kl_divergence(const std::vector<double> &dist1, const std::vector<double> &dist2)

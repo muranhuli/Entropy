@@ -201,11 +201,6 @@ const float WeightedHypergraph::ComputeHypergraphEntropy() const
     {
         int sum_edge_vertex = 0;
         sum_edge_vertex = this->GetHyperedgeCardi(info.second.id);
-        // for (auto &node : info.second.vertices)
-        // {
-        //     sum_edge_vertex += this->vertices.at(node).weight;
-        //     // sum_edge_vertex += this->GetVertexDegree(node);
-        // }
         float p = float(sum_edge_vertex) / float(sum_vertex);
         HyperedgeEntropy += -p * log(p) * info.second.weight;
     }
@@ -221,13 +216,9 @@ const float WeightedHypergraph::ComputeHypergraphEntropy() const
     {
         int sum_vertex_edge = 0;
         sum_vertex_edge = this->GetVertexDegree(info.second.id);
-        // for(auto &edge: this->adjacency_list.at(info.second.id))
-        // {
-        //     sum_vertex_edge += this->hyperedges.at(edge).weight;
-        // }
         float p = float(sum_vertex_edge) / float(sum_edge);
         VertexEntropy += -p * log(p) * info.second.weight;
     }
-    spdlog::info("HyperedgeEntropy: {} VertexEntropy: {}", HyperedgeEntropy, VertexEntropy);
+    // spdlog::info("HyperedgeEntropy: {} VertexEntropy: {}", HyperedgeEntropy, VertexEntropy);
     return HyperedgeEntropy + VertexEntropy;
 }

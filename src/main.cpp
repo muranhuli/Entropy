@@ -14,6 +14,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include "spdlog/sinks/basic_file_sink.h"
 #include "tools.hpp"
+#include "algo.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -23,27 +24,29 @@ int main(int argc, char *argv[])
 
     // Log initialization
     std::string logFileName = "logs/log_" + dataName + ".log";
-    initLog(logFileName);
+    initLog(logFileName, false);
 
+    // Initial hypergraph
     std::vector<int> vertex;
     std::vector<std::vector<int>> hyperedge;
     read_hypergraph(filename, vertex, hyperedge);
-    WeightedHypergraph hg1;
-    hg1.InitialVertex(vertex);
-    hg1.InitialHyperedge(hyperedge);
-    WeightedHypergraph hg2;
-    hg2.InitialVertex(vertex);
-    hg2.InitialHyperedge(hyperedge);
+    WeightedHypergraph hg;
+    hg.InitialVertex(vertex);
+    hg.InitialHyperedge(hyperedge);
 
-    spdlog::info("The entropy of the original hypergraph is {}", hg2.ComputeHypergraphEntropy());
-    spdlog::info("The size of vertices: {}, the size of hyperedges: {}", hg2.GetVertexList().size(), hg2.GetHyperedgeList().size());
-    spdlog::info("The size of original hypergraph is {}", hg2.GetHypergraphSize());
+    spdlog::info("Entropy: {}, Vertex size: {}, Hyperedge size: {}, Size: {}", hg.ComputeHypergraphEntropy(),
+                 hg.GetVertexList().size(), hg.GetHyperedgeList().size(), hg.GetHypergraphSize());
 
-    // mergeVertexWithMaxSimarity(hg2, 1000, 1);
-    std::unordered_map<int, std::unordered_set<int>> idV = singleVertexMerge(hg2, 0.80, 1);
-    std::unordered_map<int, std::unordered_set<int>> idE = singleHyperedgeMerge(hg2, 0.80, 1);
+    outputProperty(hg);
 
-    spdlog::info("The entropy of the compressed hypergraph is {}", hg2.ComputeHypergraphEntropy());
-    spdlog::info("The size of vertices: {}, the size of hyperedges: {}", hg2.GetVertexList().size(), hg2.GetHyperedgeList().size());
-    spdlog::info("The size of compressed hypergraph is {}", hg2.GetHypergraphSize());
+    // algo
+    double threshold = 0.1;
+    PDD sim = std::make_pair(0.9, 0.8);
+    PII cnt = std::make_pair(200, 2000);
+    int seed = 1;
+    EDHM_Sample(hg, threshold, sim, cnt, seed);
+
+    spdlog::info("Entropy: {}, Vertex size: {}, Hyperedge size: {}, Size: {}", hg.ComputeHypergraphEntropy(),
+                 hg.GetVertexList().size(), hg.GetHyperedgeList().size(), hg.GetHypergraphSize());
+    outputProperty(hg);
 }
